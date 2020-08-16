@@ -76,7 +76,7 @@ fun Date.humanizeDiff(date: Date = Date()): String {
     fun getStandardPastOrFutureVariant(declinedVariant: String) =
         if (isPast) "$declinedVariant назад" else "через $declinedVariant"
 
-    val interval = when {
+    return when {
         absDiff / DAY > 360 -> getPastOrFutureVariant("более года назад", "более чем через год")
         absDiff >= 26 * HOUR -> {
             val daysPassed = (absDiff / DAY).toInt()
@@ -100,6 +100,4 @@ fun Date.humanizeDiff(date: Date = Date()): String {
         }
         else -> "только что"
     }
-    println(interval)
-    return interval
 }
