@@ -7,10 +7,6 @@ const val SECOND = 1000L
 const val MINUTE = 60 * SECOND
 const val HOUR = 60 * MINUTE
 const val DAY = 24 * HOUR
-const val WEEK = 7 * DAY
-const val MONTH = 4 * WEEK
-const val YEAR = 12 * MONTH
-
 
 fun Date.format(pattern: String = "HH:mm:ss dd.MM.yy"): String {
     val dateFormat = SimpleDateFormat(pattern, Locale("ru"))
@@ -25,74 +21,60 @@ fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
         TimeUnits.MINUTE -> value * MINUTE
         TimeUnits.HOUR -> value * HOUR
         TimeUnits.DAY -> value * DAY
-        TimeUnits.WEEK -> value * WEEK
-        TimeUnits.MONTH -> value * MONTH
-        TimeUnits.YEAR -> value * YEAR
     }
     this.time = time
     return this
 }
 
-enum class TimeUnits {
-    SECOND,
-    MINUTE,
-    HOUR,
-    DAY,
-    WEEK,
-    MONTH,
-    YEAR
+enum class TimeUnits(private val normalForm: String) {
+    SECOND("секунд"),
+    MINUTE("минут"),
+    HOUR("час"),
+    DAY("д");
+
+    fun plural(unit: Int): String = when (this) {
+        SECOND, MINUTE ->
+            when (unit) {
+                1 -> "$unit ${this.normalForm}у"
+                2, 3, 4 -> "$unit ${this.normalForm}ы"
+                else -> "$unit ${this.normalForm}"
+            }
+        HOUR ->
+            when (unit) {
+                1 -> "$unit ${this.normalForm}"
+                2, 3, 4 -> "$unit ${this.normalForm}а"
+                else -> "$unit ${this.normalForm}ов"
+            }
+        DAY ->
+            when (unit) {
+                1 -> "$unit ${this.normalForm}ень"
+                2, 3, 4 -> "$unit ${this.normalForm}ня"
+                else -> "$unit ${this.normalForm}ней"
+            }
+    }
+
 }
 
 fun Date.humanizeDiff(date: Date = Date()): String {
     val diff = date.time - time  // + second for considering processing time.
 
     return when {
-        diff / MONTH == 12L -> "год назад"
-        diff >= YEAR -> "более года назад"
-        diff >= MONTH -> {
-            val monthsPassed = diff / MONTH
-            val declension = when (monthsPassed) {
-                1L -> ""
-                2L, 3L, 4L -> "а"
-                else -> "ев"
-            }
-            "$monthsPassed месяц$declension назад"
-        }
-        diff >= WEEK -> {
-            val weeksPassed = diff / WEEK
-            val declension = when (weeksPassed) {
-                1L -> "ю"
-                2L, 3L, 4L -> "и"
-                else -> "ь"
-            }
-            "$weeksPassed недел$declension назад"
-        }
+        diff / DAY > 365 -> "более года назад"
         diff >= DAY -> {
-            val daysPassed = diff / DAY
-            val declension = when (daysPassed) {
-                1L -> "день"
-                2L, 3L, 4L -> "дня"
-                else -> "дней"
-            }
-            "$daysPassed $declension назад"
+            val daysPassed = (diff / DAY).toInt()
+            "${TimeUnits.DAY.plural(daysPassed)} назад"
         }
         diff >= HOUR -> {
-            val hoursPassed = diff / HOUR
-            val declension = when (hoursPassed) {
-                1L -> ""
-                2L, 3L, 4L -> "а"
-                else -> "ов"
-            }
-            "$hoursPassed час$declension назад"
+            val hoursPassed = (diff / HOUR).toInt()
+            "${TimeUnits.HOUR.plural(hoursPassed)} назад"
         }
         diff >= MINUTE -> {
-            val minutesPassed = diff / MINUTE
-            val declension = when (minutesPassed) {
-                1L -> "у"
-                2L, 3L, 4L -> "ы"
-                else -> ""
-            }
-            "$minutesPassed минут$declension назад"
+            val minutesPassed = (diff / MINUTE).toInt()
+            "${TimeUnits.MINUTE.plural(minutesPassed)} назад"
+        }
+        diff >= SECOND -> {
+            val secondsPassed = (diff / MINUTE).toInt()
+            "${TimeUnits.SECOND.plural(secondsPassed)} назад"
         }
         else -> "только что"
     }
