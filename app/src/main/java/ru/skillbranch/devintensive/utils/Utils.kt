@@ -64,4 +64,11 @@ object Utils {
         firstName.isNullOrBlank() && !lastName.isNullOrBlank() -> lastName[0].toString()
         else -> "${firstName?.get(0)}${lastName?.get(0)}"
     }
+
+    fun String.truncate(allowedCharsCount: Int): String {
+        if (this.trim().length < allowedCharsCount) {
+            return this.trim()
+        }
+        return "${this.trim().substring(0, allowedCharsCount - 1)}..."
+    }
 }
