@@ -1,5 +1,7 @@
 package ru.skillbranch.devintensive.utils
 
+import java.util.*
+
 object Utils {
     fun parseFullName(fullName: String?): Pair<String?, String?> {
         val parts: List<String>? = fullName?.split(" ")
@@ -46,21 +48,29 @@ object Utils {
             'я' to "ya"
         )
         val translit = StringBuilder()
-        for (letter in payload) {
-            if (letter in translitDict) {
-                translit.append(translitDict[letter])
-            } else {
-                translit.append(letter)
+        val nameParts = payload.toLowerCase(Locale.ROOT).split(" ")
+        for ((partIndex, namePart) in nameParts.withIndex()) {
+            for ((index, letter) in namePart.withIndex()) {
+                val candidate = StringBuilder(translitDict[letter] ?: letter.toString())
+                if (index == 0) {
+                    candidate[0] = candidate[0].toUpperCase()
+                }
+                translit.append(candidate)
+            }
+            if (partIndex < nameParts.size - 1) {
+                translit.append(divider)
             }
         }
-        return translit.toString().replace(" ", divider)
+        return translit.toString()
     }
 
     fun toInitials(firstName: String?, lastName: String?): String? = when {
         firstName.isNullOrBlank() && lastName.isNullOrBlank() -> null
         !firstName.isNullOrBlank() && lastName.isNullOrBlank() -> firstName[0].toString()
+            .toUpperCase(Locale.ROOT)
         firstName.isNullOrBlank() && !lastName.isNullOrBlank() -> lastName[0].toString()
-        else -> "${firstName?.get(0)}${lastName?.get(0)}"
+            .toUpperCase(Locale.ROOT)
+        else -> "${firstName?.get(0)}${lastName?.get(0)}".toUpperCase(Locale.ROOT)
     }
 
     fun String.truncate(allowedCharsCount: Int): String {
