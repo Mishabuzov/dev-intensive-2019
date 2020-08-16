@@ -1,7 +1,5 @@
 package ru.skillbranch.devintensive.utils
 
-import java.lang.StringBuilder
-
 object Utils {
     fun parseFullName(fullName: String?): Pair<String?, String?> {
         val parts: List<String>? = fullName?.split(" ")
@@ -66,9 +64,13 @@ object Utils {
     }
 
     fun String.truncate(allowedCharsCount: Int): String {
-        if (this.trim().length < allowedCharsCount) {
-            return this.trim()
+        if (trim().length < allowedCharsCount) {
+            return trim()
         }
-        return "${this.trim().substring(0, allowedCharsCount - 1)}..."
+        return "${trim().substring(0, allowedCharsCount - 1)}..."
     }
+
+    fun String.stripHtml() = replace(Regex("<[^>]*>"), "")
+        .replace(Regex("\\s{2,}"), " ")
+
 }
