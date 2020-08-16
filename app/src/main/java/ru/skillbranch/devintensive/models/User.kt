@@ -51,14 +51,14 @@ data class User(
         }
     }
 
-    inner class Builder {
+    class Builder {
         lateinit var id: String
         var firstName: String? = null
         var lastName: String? = null
         var avatar: String? = null
         var rating: Int = 0
         var respect: Int = 0
-        var lastVisit: Date? = null
+        var lastVisit: Date? = Date()
         var isOnline: Boolean = false
 
         fun id(id: String): Builder {
