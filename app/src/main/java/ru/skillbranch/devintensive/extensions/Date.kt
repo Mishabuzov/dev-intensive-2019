@@ -2,6 +2,7 @@ package ru.skillbranch.devintensive.extensions
 
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
 
 const val SECOND = 1000L
 const val MINUTE = 60 * SECOND
@@ -32,50 +33,73 @@ enum class TimeUnits(private val normalForm: String) {
     HOUR("час"),
     DAY("д");
 
-    fun plural(unit: Int): String = when (this) {
-        SECOND, MINUTE ->
-            when (unit) {
-                1 -> "$unit ${this.normalForm}у"
-                2, 3, 4 -> "$unit ${this.normalForm}ы"
-                else -> "$unit ${this.normalForm}"
+    fun plural(number: Int): String {
+        val dozens = (number % 100) / 10
+        val units = number % 10
+        if (dozens == 1) {
+            return when (this) {
+                SECOND, MINUTE -> normalForm
+                HOUR -> "$number ${normalForm}ов"
+                DAY -> "$number ${normalForm}ней"
             }
-        HOUR ->
-            when (unit) {
-                1 -> "$unit ${this.normalForm}"
-                2, 3, 4 -> "$unit ${this.normalForm}а"
-                else -> "$unit ${this.normalForm}ов"
-            }
-        DAY ->
-            when (unit) {
-                1 -> "$unit ${this.normalForm}ень"
-                2, 3, 4 -> "$unit ${this.normalForm}ня"
-                else -> "$unit ${this.normalForm}ней"
-            }
+        }
+        return when (this) {
+            SECOND, MINUTE ->
+                when (units) {
+                    1 -> "$number ${this.normalForm}у"
+                    2, 3, 4 -> "$number ${this.normalForm}ы"
+                    else -> "$number ${this.normalForm}"
+                }
+            HOUR ->
+                when (units) {
+                    1 -> "$number ${this.normalForm}"
+                    2, 3, 4 -> "$number ${this.normalForm}а"
+                    else -> "$number ${this.normalForm}ов"
+                }
+            DAY ->
+                when (units) {
+                    1 -> "$number ${this.normalForm}ень"
+                    2, 3, 4 -> "$number ${this.normalForm}ня"
+                    else -> "$number ${this.normalForm}ней"
+                }
+        }
     }
 
 }
 
 fun Date.humanizeDiff(date: Date = Date()): String {
-    val diff = date.time - time  // + second for considering processing time.
+    val absDiff = abs(date.time - time)
+    val isPast = date.time - time > 0
 
-    return when {
-        diff / DAY > 365 -> "более года назад"
-        diff >= DAY -> {
-            val daysPassed = (diff / DAY).toInt()
-            "${TimeUnits.DAY.plural(daysPassed)} назад"
+    fun getPastOrFutureVariant(past: String, future: String) = if (isPast) past else future
+
+    fun getStandardPastOrFutureVariant(declinedVariant: String) =
+        if (isPast) "$declinedVariant назад" else "через $declinedVariant"
+
+    val interval = when {
+        absDiff / DAY > 360 -> getPastOrFutureVariant("более года назад", "более чем через год")
+        absDiff >= 26 * HOUR -> {
+            val daysPassed = (absDiff / DAY).toInt()
+            getStandardPastOrFutureVariant(TimeUnits.DAY.plural(daysPassed))
         }
-        diff >= HOUR -> {
-            val hoursPassed = (diff / HOUR).toInt()
-            "${TimeUnits.HOUR.plural(hoursPassed)} назад"
+        absDiff >= 22 * HOUR -> getStandardPastOrFutureVariant("день")
+        absDiff >= 75 * MINUTE -> {
+            val hoursPassed = (absDiff / HOUR).toInt()
+            getStandardPastOrFutureVariant(TimeUnits.HOUR.plural(hoursPassed))
         }
-        diff >= MINUTE -> {
-            val minutesPassed = (diff / MINUTE).toInt()
-            "${TimeUnits.MINUTE.plural(minutesPassed)} назад"
+        absDiff >= 45 * MINUTE -> getStandardPastOrFutureVariant("час")
+        absDiff >= 75 * SECOND -> {
+            val minutesPassed = (absDiff / MINUTE).toInt()
+            getStandardPastOrFutureVariant(TimeUnits.MINUTE.plural(minutesPassed))
         }
-        diff >= SECOND -> {
-            val secondsPassed = (diff / MINUTE).toInt()
-            "${TimeUnits.SECOND.plural(secondsPassed)} назад"
+        absDiff >= 45 * SECOND -> {
+            getStandardPastOrFutureVariant("минуту")
+        }
+        absDiff >= SECOND -> {
+            getStandardPastOrFutureVariant("несколько секунд")
         }
         else -> "только что"
     }
+    println(interval)
+    return interval
 }
