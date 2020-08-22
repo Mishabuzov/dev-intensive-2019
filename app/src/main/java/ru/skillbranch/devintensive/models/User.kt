@@ -52,7 +52,7 @@ data class User(
     }
 
     class Builder {
-        lateinit var id: String
+        var id: String = ""
         var firstName: String? = null
         var lastName: String? = null
         var avatar: String? = null
