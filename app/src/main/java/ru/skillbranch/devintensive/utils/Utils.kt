@@ -8,7 +8,7 @@ object Utils {
         fun changeEmptyToNull(candidate: String?) =
             if (candidate.isNullOrBlank()) null else candidate
 
-        val parts: List<String>? = fullName?.split(" ")
+        val parts: List<String>? = fullName?.trim()?.split(" ")
 
         val firstName = changeEmptyToNull(parts?.getOrNull(0))
         val lastName = changeEmptyToNull(parts?.getOrNull(1))
@@ -70,14 +70,14 @@ object Utils {
 
     fun toInitials(firstName: String?, lastName: String?): String? = when {
         firstName.isNullOrBlank() && lastName.isNullOrBlank() -> null
-        !firstName.isNullOrBlank() && lastName.isNullOrBlank() -> firstName[0].toString()
+        !firstName.isNullOrBlank() && lastName.isNullOrBlank() -> firstName.trim()[0].toString()
             .toUpperCase(Locale.ROOT)
-        firstName.isNullOrBlank() && !lastName.isNullOrBlank() -> lastName[0].toString()
+        firstName.isNullOrBlank() && !lastName.isNullOrBlank() -> lastName.trim()[0].toString()
             .toUpperCase(Locale.ROOT)
-        else -> "${firstName?.get(0)}${lastName?.get(0)}".toUpperCase(Locale.ROOT)
+        else -> "${firstName?.trim()?.get(0)}${lastName?.trim()?.get(0)}".toUpperCase(Locale.ROOT)
     }
 
-    fun String.truncate(allowedCharsCount: Int): String {
+    fun String.truncate(allowedCharsCount: Int = 16): String {
         if (trim().length < allowedCharsCount) {
             return trim()
         }
