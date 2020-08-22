@@ -18,10 +18,10 @@ abstract class BaseMessage(
         fun makeMessage(
             from: User?,
             chat: Chat,
-            isIncoming: Boolean = false,
             date: Date = Date(),
             type: String = "text",
-            payload: Any?
+            payload: Any,
+            isIncoming: Boolean = false
         ): BaseMessage {
             lastId++
             return when (type) {
