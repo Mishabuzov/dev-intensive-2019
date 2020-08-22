@@ -38,7 +38,7 @@ enum class TimeUnits(private val normalForm: String) {
         val units = number % 10
         if (dozens == 1) {
             return when (this) {
-                SECOND, MINUTE -> normalForm
+                SECOND, MINUTE -> "$number $normalForm"
                 HOUR -> "$number ${normalForm}ов"
                 DAY -> "$number ${normalForm}ней"
             }
@@ -78,24 +78,24 @@ fun Date.humanizeDiff(date: Date = Date()): String {
 
     return when {
         absDiff / DAY > 360 -> getPastOrFutureVariant("более года назад", "более чем через год")
-        absDiff >= 26 * HOUR -> {
+        absDiff > 26 * HOUR -> {
             val daysPassed = (absDiff / DAY).toInt()
             getStandardPastOrFutureVariant(TimeUnits.DAY.plural(daysPassed))
         }
-        absDiff >= 22 * HOUR -> getStandardPastOrFutureVariant("день")
-        absDiff >= 75 * MINUTE -> {
+        absDiff > 22 * HOUR -> getStandardPastOrFutureVariant("день")
+        absDiff > 75 * MINUTE -> {
             val hoursPassed = (absDiff / HOUR).toInt()
             getStandardPastOrFutureVariant(TimeUnits.HOUR.plural(hoursPassed))
         }
-        absDiff >= 45 * MINUTE -> getStandardPastOrFutureVariant("час")
-        absDiff >= 75 * SECOND -> {
+        absDiff > 45 * MINUTE -> getStandardPastOrFutureVariant("час")
+        absDiff > 75 * SECOND -> {
             val minutesPassed = (absDiff / MINUTE).toInt()
             getStandardPastOrFutureVariant(TimeUnits.MINUTE.plural(minutesPassed))
         }
-        absDiff >= 45 * SECOND -> {
+        absDiff > 45 * SECOND -> {
             getStandardPastOrFutureVariant("минуту")
         }
-        absDiff >= SECOND -> {
+        absDiff > SECOND -> {
             getStandardPastOrFutureVariant("несколько секунд")
         }
         else -> "только что"
