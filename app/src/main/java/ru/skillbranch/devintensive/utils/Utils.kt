@@ -52,20 +52,14 @@ object Utils {
             'я' to "ya"
         )
         val translit = StringBuilder()
-        val nameParts = payload.toLowerCase(Locale.ROOT).split(" ")
-        for ((partIndex, namePart) in nameParts.withIndex()) {
-            for ((index, letter) in namePart.withIndex()) {
-                val candidate = StringBuilder(translitDict[letter] ?: letter.toString())
-                if (index == 0) {
-                    candidate[0] = candidate[0].toUpperCase()
-                }
-                translit.append(candidate)
+        for (letter in payload.trim()) {
+            val candidate = StringBuilder(translitDict[letter.toLowerCase()] ?: letter.toString())
+            if (letter.isUpperCase() && candidate.isNotEmpty()) {
+                candidate[0] = candidate[0].toUpperCase()
             }
-            if (partIndex < nameParts.size - 1) {
-                translit.append(divider)
-            }
+            translit.append(candidate)
         }
-        return translit.toString()
+        return translit.toString().replace(" ", divider)
     }
 
     fun toInitials(firstName: String?, lastName: String?): String? = when {
@@ -78,13 +72,16 @@ object Utils {
     }
 
     fun String.truncate(allowedCharsCount: Int = 16): String {
-        if (trim().length < allowedCharsCount) {
+        if (trim().length <= allowedCharsCount) {
             return trim()
         }
-        return "${trim().substring(0, allowedCharsCount - 1)}..."
+        return "${trim().substring(0, allowedCharsCount).trim()}..."
     }
 
-    fun String.stripHtml() = replace(Regex("<[^>]*>"), "")
-        .replace(Regex("\\s{2,}"), " ")
+    fun String.stripHtml(): String {
+        val htmlRegex = Regex("(<.*?>)|(&[^ а-я]{1,4}?;)")
+        val spaceRegex = Regex(" {2,}")
+        return replace(htmlRegex, "").replace(spaceRegex, " ")
+    }
 
 }
