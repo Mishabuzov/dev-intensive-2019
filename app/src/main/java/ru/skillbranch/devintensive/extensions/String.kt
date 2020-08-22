@@ -1,4 +1,4 @@
-package ru.skillbranch.devintensive.ru.skillbranch.devintensive.extensions
+package ru.skillbranch.devintensive.extensions
 
 fun String.truncate(allowedCharsCount: Int = 16): String {
     if (trim().length <= allowedCharsCount) {
