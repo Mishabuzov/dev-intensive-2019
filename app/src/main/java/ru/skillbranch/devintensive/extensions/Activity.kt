@@ -18,7 +18,7 @@ fun Activity.hideKeyboard() {
 
 private const val KEYBOARD_VISIBLE_THRESHOLD_DP = 100
 
-fun Activity.isKeyboardOpened(): Boolean {
+fun Activity.isKeyboardOpen(): Boolean {
     fun convertDpToPx(value: Int): Int =
         (value * Resources.getSystem().displayMetrics.density).toInt()
 
@@ -33,5 +33,5 @@ fun Activity.isKeyboardOpened(): Boolean {
 }
 
 fun Activity.isKeyboardClosed(): Boolean {
-    return isKeyboardOpened().not()
+    return isKeyboardOpen().not()
 }
