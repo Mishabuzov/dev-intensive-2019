@@ -1,10 +1,8 @@
-package ru.skillbranch.devintensive.ru.skillbranch.devintensive.models
+package ru.skillbranch.devintensive.models
 
 import androidx.core.text.isDigitsOnly
-import ru.skillbranch.devintensive.ru.skillbranch.devintensive.models.Bender.Status.CRITICAL
-import ru.skillbranch.devintensive.ru.skillbranch.devintensive.models.Bender.Status.NORMAL
 
-class Bender(var status: Status = NORMAL, var question: Question = Question.NAME) {
+class Bender(var status: Status = Status.NORMAL, var question: Question = Question.NAME) {
 
     fun askQuestion(): String = when (question) {
         Question.NAME -> Question.NAME.question
@@ -21,7 +19,7 @@ class Bender(var status: Status = NORMAL, var question: Question = Question.NAME
             "Отлично - ты справился\n${question.question}" to status.color
         } else {
             val phrase = StringBuilder("Это неправильный ответ")
-            if (status == CRITICAL) {
+            if (status == Status.CRITICAL) {
                 phrase.append(". Давай все по новой")
                 question = Question.NAME
             }
