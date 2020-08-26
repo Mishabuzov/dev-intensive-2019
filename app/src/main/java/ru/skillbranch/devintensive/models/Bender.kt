@@ -71,7 +71,7 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
 
             override fun getErrorMessage(): String = "Серийный номер содержит только цифры, и их 7"
         },
-        IDLE("На этом всё, вопросов больше нет", listOf()) {
+        IDLE("На этом все, вопросов больше нет", listOf()) {
             override fun nextQuestion(): Question = IDLE
             override fun isValidAnswer(answer: String): Boolean = true
             override fun getErrorMessage(): String = ""
